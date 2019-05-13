@@ -3,7 +3,7 @@ import src.sks.percolates_analyzer.percolation as fortest
 
 class TestUFDSQF:
     def setup_method(self, method):
-        self.UFDS = fortest.UFDSQF(3)
+        self.UFDS = fortest.UFDSQuickFind(3)
 
     def teardown_method(self, method):
         self.UFDS = None
@@ -28,7 +28,7 @@ class TestUFDSQF:
 
 class TestUFDSUF:
     def setup_method(self, method):
-        self.UFDS = fortest.UFDSQU(3)
+        self.UFDS = fortest.UFDSQuickUnion(3)
 
     def teardown_method(self, method):
         self.UFDS = None
@@ -63,16 +63,16 @@ class TestPercolation:
         assert self.per.field.connected(0, 4) == True
 
     def test_isOpen(self):
-        assert self.per.isOpen(1, 0) == False
+        assert self.per.is_open(1, 0) == False
         self.per.open(1, 0)
-        assert self.per.isOpen(1, 0) == True
+        assert self.per.is_open(1, 0) == True
 
     def test_isFull(self):
-        assert self.per.isFull(1, 0) == False
+        assert self.per.is_full(1, 0) == False
         self.per.open(0, 0)
-        assert self.per.isFull(1, 0) == False
+        assert self.per.is_full(1, 0) == False
         self.per.open(1, 0)
-        assert self.per.isFull(1, 0) == True
+        assert self.per.is_full(1, 0) == True
 
     def test_percolates(self):
         assert self.per.percolates() == False

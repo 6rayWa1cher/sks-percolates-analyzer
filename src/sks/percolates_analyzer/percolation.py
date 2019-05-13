@@ -1,12 +1,12 @@
-class UFDSQF:
-    def __init__(self, N=0):
-        self.st = [i for i in range(N)]
-        self.ln = N
+class UFDSQuickFind:
+    def __init__(self, n=0):
+        self.st = [i for i in range(n)]
+        self.ln = n
 
     def union_set(self, x, y):
-        currset = self.st[y]
+        curr_set = self.st[y]
         for i in range(self.ln):
-            if self.st[i] == currset:
+            if self.st[i] == curr_set:
                 self.st[i] = self.st[x]
 
     def find_set(self, x):
@@ -19,11 +19,11 @@ class UFDSQF:
         return " ".join(map(str, self.st))
 
 
-class UFDSQU:
-    def __init__(self, N=0):
-        self._rank = [0 for _ in range(N)]
-        self._id = [i for i in range(N)]
-        self.ln = N
+class UFDSQuickUnion:
+    def __init__(self, n=0):
+        self._rank = [0 for _ in range(n)]
+        self._id = [i for i in range(n)]
+        self.ln = n
 
     def union_set(self, x, y):
         py = self.root(y)
@@ -61,53 +61,49 @@ class UFDSQU:
 
 
 class Percolation:
-    def __init__(self, N=None, uf=UFDSQU):
+    def __init__(self, n=None, uf=UFDSQuickUnion):
         self.uf = uf
         self.mass = None
         self.field = None
-        self.N = N
-        if str(N).isnumeric():
-            self.Percolation(N)
-
-    def Percolation(self, N):
-        self.mass = [[0 for _ in range(N)] for _ in range(N)]
-        self.field = self.uf(N ** 2 + 2)
-        self.N = N
-        for i in range(N):
-            self.field.union_set(N ** 2, i)
-            self.field.union_set(N ** 2 + 1, N ** 2 - 1 - i)
+        self.n = n
+        if str(n).isnumeric():
+            self.mass = [[0 for _ in range(n)] for _ in range(n)]
+            self.field = self.uf(n ** 2 + 2)
+            for i in range(n):
+                self.field.union_set(n ** 2, i)
+                self.field.union_set(n ** 2 + 1, n ** 2 - 1 - i)
 
     def open(self, i, j):
         self.mass[i][j] = 1
         try:
-            if self.isOpen(i - 1, j):
-                self.field.union_set(self.N * i + j, self.N * (i - 1) + j)
+            if self.is_open(i - 1, j):
+                self.field.union_set(self.n * i + j, self.n * (i - 1) + j)
         except IndexError:
             pass
         try:
-            if self.isOpen(i + 1, j):
-                self.field.union_set(self.N * i + j, self.N * (i + 1) + j)
+            if self.is_open(i + 1, j):
+                self.field.union_set(self.n * i + j, self.n * (i + 1) + j)
         except IndexError:
             pass
         try:
-            if self.isOpen(i, j - 1):
-                self.field.union_set(self.N * i + j, self.N * i + (j - 1))
+            if self.is_open(i, j - 1):
+                self.field.union_set(self.n * i + j, self.n * i + (j - 1))
         except IndexError:
             pass
         try:
-            if self.isOpen(i, j + 1):
-                self.field.union_set(self.N * i + j, self.N * i + (j + 1))
+            if self.is_open(i, j + 1):
+                self.field.union_set(self.n * i + j, self.n * i + (j + 1))
         except IndexError:
             pass
 
-    def isOpen(self, i, j):
+    def is_open(self, i, j):
         return self.mass[i][j] == 1
 
-    def isFull(self, i, j):
-        return self.field.connected(i * self.N + j, self.N ** 2)
+    def is_full(self, i, j):
+        return self.field.connected(i * self.n + j, self.n ** 2)
 
     def percolates(self):
-        return self.field.connected(self.N ** 2, self.N ** 2 + 1)
+        return self.field.connected(self.n ** 2, self.n ** 2 + 1)
 
     def __str__(self):
         ret = ""
