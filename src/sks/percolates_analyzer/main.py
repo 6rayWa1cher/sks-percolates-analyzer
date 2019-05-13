@@ -35,7 +35,7 @@ class PercolationStats:
         open_cells, close_cells = 0, 0
         for x in range(n):
             for y in range(n):
-                if p.open(x, y):
+                if p.is_open(x, y):
                     open_cells += 1
                 else:
                     close_cells += 1
