@@ -61,17 +61,13 @@ class UFDSQuickUnion:
 
 
 class Percolation:
-    def __init__(self, n=None, uf=UFDSQuickUnion):
-        self.uf = uf
-        self.mass = None
-        self.field = None
+    def __init__(self, n=0, uf=UFDSQuickUnion):
         self.n = n
-        if str(n).isnumeric():
-            self.mass = [[0 for _ in range(n)] for _ in range(n)]
-            self.field = self.uf(n ** 2 + 2)
-            for i in range(n):
-                self.field.union_set(n ** 2, i)
-                self.field.union_set(n ** 2 + 1, n ** 2 - 1 - i)
+        self.mass = [[0 for _ in range(n)] for _ in range(n)]
+        self.field = uf(n ** 2 + 2)
+        for i in range(n):
+            self.field.union_set(n ** 2, i)
+            self.field.union_set(n ** 2 + 1, n ** 2 - 1 - i)
 
     def open(self, i, j):
         self.mass[i][j] = 1
@@ -113,37 +109,3 @@ class Percolation:
         ret += "UFDS\n"
         ret += str(self.field)
         return ret
-
-
-"""
-print("UFDSQU", "\n")
-per = Percolation(4)
-print(per, "\n")
-per.open(0, 0)
-print(per, "\n")
-per.open(1, 0)
-print("per.isOpen(1, 0)", per.isOpen(1, 0), "\n")
-print("per.isOpen(1, 1)", per.isOpen(1, 1), "\n")
-print("per.isFull(1, 0)", per.isFull(1, 0), "\n")
-print("per.isFull(1, 1)", per.isFull(1, 1), "\n")
-per.open(2, 0)
-print("percolates()", per.percolates(), "\n")
-per.open(3, 0)
-print(per, "\n")
-print("percolates()", per.percolates(), "\n")
-print("UFDSQF", "\n")
-per = Percolation(4, UFDSQF)
-print(per, "\n")
-per.open(0, 0)
-print(per, "\n")
-per.open(1, 0)
-print("per.isOpen(1, 0)", per.isOpen(1, 0), "\n")
-print("per.isOpen(1, 1)", per.isOpen(1, 1), "\n")
-print("per.isFull(1, 0)", per.isFull(1, 0), "\n")
-print("per.isFull(1, 1)", per.isFull(1, 1), "\n")
-per.open(2, 0)
-print("percolates()", per.percolates(), "\n")
-per.open(3, 0)
-print(per, "\n")
-print("percolates()", per.percolates(), "\n")
-"""
