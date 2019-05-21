@@ -18,7 +18,7 @@ class PercolationStats:
 
     def stddev(self):
         mean = self.mean()
-        return sum(map(lambda xt: (xt - mean) ** 2, self.series_open_cell)) / (self.series_count - 1)
+        return math.sqrt(sum(map(lambda xt: (xt - mean) ** 2, self.series_open_cell)) / (self.series_count - 1))
 
     def confidence(self):
         mean = self.mean()
@@ -47,7 +47,7 @@ class PercolationStats:
         self.series_open_cell = list()
         for _ in range(series_count):
             open_cells, close_cells = self._work(n, collection)
-            self.series_open_cell.append(open_cells / close_cells)
+            self.series_open_cell.append(open_cells / (close_cells + open_cells))
 
     def __str__(self):
         return "mean\t=\t{0}\n" \
