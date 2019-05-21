@@ -1,4 +1,4 @@
-import src.sks.percolates_analyzer.percolation as fortest
+import src.sks.percolatesanalyzer.percolation as fortest
 
 
 class TestUFDSQF:

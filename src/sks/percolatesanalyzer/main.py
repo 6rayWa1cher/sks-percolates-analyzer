@@ -2,7 +2,7 @@ import math
 import random
 import time
 
-from sks.percolates_analyzer.percolation import UFDSQuickUnion, Percolation, UFDSQuickFind
+from sks.percolatesanalyzer.percolation import UFDSQuickUnion, Percolation, UFDSQuickFind
 
 
 class PercolationStats:
