@@ -66,7 +66,7 @@ class Percolation:
         self.mass = [[0 for i in range(n)] for j in range(n)]
         self.field = uf(n ** 2 + 2)
         for i in range(n):
-            self.field.union_set(0, i)
+            self.field.union_set(0, i+1)
             self.field.union_set(n ** 2 + 1, n ** 2 - i)
 
     def getfindex(self, i, j):
@@ -102,3 +102,5 @@ class Percolation:
         ret += "UFDS\n"
         ret += str(self.field)
         return ret
+
+
