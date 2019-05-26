@@ -1,4 +1,6 @@
-import src.sks.percolates_analyzer.percolation as fortest
+import src.sks.percolatesanalyzer.percolation as fortest
+
+__author__ = "Alstrasz"
 
 
 class TestUFDSQF:
