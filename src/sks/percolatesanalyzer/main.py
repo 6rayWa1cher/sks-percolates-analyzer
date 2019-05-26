@@ -1,6 +1,8 @@
-import math
 import random
 import time
+from multiprocessing import Pipe, connection, Process
+
+import math
 
 from sks.percolatesanalyzer.percolation import UFDSQuickUnion, Percolation, UFDSQuickFind
 
@@ -49,6 +51,36 @@ class PercolationStats:
             open_cells, close_cells = self._work(n, collection)
             self.series_open_cell.append(open_cells / (close_cells + open_cells))
 
+    def _do_parallel_experiment(self, n, collection, pipe: connection.Connection, times):
+        buffer = list()
+        for _ in range(times):
+            open_cells, close_cells = self._work(n, collection)
+            buffer.append(open_cells / (close_cells + open_cells))
+        pipe.send(buffer)
+
+    def do_parallel_experiment(self, n: int, series_count: int, threads=8, collection=UFDSQuickUnion):
+        if n <= 0 or series_count <= 0 or threads <= 0:
+            raise ValueError
+        self.series_open_cell = list()
+        parent_conn, child_conn = Pipe()
+        processes = list()
+        assigned_series_count = 0
+        for _ in range(threads - 1):
+            curr_series_count = series_count // threads
+            p = Process(target=self._do_parallel_experiment, args=(n, collection, child_conn, curr_series_count))
+            assigned_series_count += curr_series_count
+            processes.append(p)
+            p.start()
+        p = Process(target=self._do_parallel_experiment,
+                    args=(n, collection, child_conn, series_count - assigned_series_count))
+        processes.append(p)
+        p.start()
+        for _ in range(threads):
+            buffer = parent_conn.recv()
+            self.series_open_cell += buffer
+        for p in processes:
+            p.join()
+
     def __str__(self):
         return "mean\t=\t{0}\n" \
                "stddev\t=\t{1}\n" \
@@ -59,10 +91,14 @@ def main():
     in_n = int(input("n: "))
     in_count = int(input("count: "))
     in_collection = input("collection (qf or qu): ")
+    in_threads = int(input("parallel_processes (1 for single thread): "))
     t_collection = UFDSQuickFind if in_collection.strip().lower() == "qf" else UFDSQuickUnion
     ps = PercolationStats()
     before = time.perf_counter()
-    ps.do_experiment(in_n, in_count, t_collection)
+    if in_threads != 1:
+        ps.do_parallel_experiment(in_n, in_count, collection=t_collection)
+    else:
+        ps.do_experiment(in_n, in_count, t_collection)
     print(str(ps))
     after = time.perf_counter()
     print(f"passsed {after - before} seconds")

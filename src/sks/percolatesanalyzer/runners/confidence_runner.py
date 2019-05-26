@@ -1,5 +1,4 @@
 from itertools import product
-from itertools import product
 from typing import Mapping, Iterable, Tuple, NewType
 
 import matplotlib.pyplot as plt
@@ -20,7 +19,7 @@ def start_process(n_arr, cycles_arr, vibration_factor=3, primary_key_cycles=Fals
         print("Starting n:{0} cycles:{1} test...".format(n, cycles), end=' ')
         curr_borders = list()
         for _ in range(vibration_factor):
-            ps.do_experiment(n, cycles, UFDSQuickUnion)
+            ps.do_parallel_experiment(n, cycles, threads=4, collection=UFDSQuickUnion)
             l, r = ps.confidence()
             curr_borders.append(((l + r) / 2, l, r))
         center_index = len(curr_borders) // 2
@@ -74,4 +73,4 @@ if __name__ == '__main__':
     # primary - n, secondary - cycles
     draw_graphics(start_process([5, 10], list(range(50, 5000, 200))))
     # primary - cycles, secondary - n
-    draw_graphics(start_process(list(range(5, 50)), [100, 200], primary_key_cycles=True), True)
+    draw_graphics(start_process(list(range(5, 50)), [500, 5000], primary_key_cycles=True), True)
