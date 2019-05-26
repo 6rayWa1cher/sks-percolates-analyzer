@@ -1,3 +1,6 @@
+__author__ = "Alstrasz"
+
+
 class UFDSQuickFind:
     def __init__(self, n=0):
         self.st = [i for i in range(n)]

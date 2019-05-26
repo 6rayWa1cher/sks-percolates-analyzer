@@ -1,5 +1,7 @@
 import src.sks.percolatesanalyzer.percolation as fortest
 
+__author__ = "Alstrasz"
+
 
 class TestUFDSQF:
     def setup_method(self, method):

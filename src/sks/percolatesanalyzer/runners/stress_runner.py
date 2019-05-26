@@ -1,8 +1,13 @@
+"""
+This module provides statistical methods for time performance.
+"""
 import time
 from itertools import product
 
 from sks.percolatesanalyzer.main import PercolationStats
 from sks.percolatesanalyzer.percolation import UFDSQuickFind, UFDSQuickUnion
+
+__author__ = "6rayWa1cher"
 
 
 def start_process(collection):

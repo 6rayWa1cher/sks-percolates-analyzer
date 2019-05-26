@@ -1,3 +1,9 @@
+"""
+Provides PercolationStats and main runner
+
+PercolationStats holds experiment stats, and defines Monte-Carlo
+logic.
+"""
 import random
 import time
 from multiprocessing import Pipe, connection, Process
@@ -5,6 +11,8 @@ from multiprocessing import Pipe, connection, Process
 import math
 
 from sks.percolatesanalyzer.percolation import UFDSQuickUnion, Percolation, UFDSQuickFind
+
+__author__ = "6rayWa1cher"
 
 
 class PercolationStats:
@@ -30,6 +38,13 @@ class PercolationStats:
 
     @staticmethod
     def _work(n, collection=UFDSQuickUnion):
+        """
+        Single work for Monte-Carlo experiment.
+        Opens cells until matrix percolates then count open and closed cells.
+        :param n: size of matrix (n x n)
+        :param collection: UFDS, see `sks.percolatesanalyzer.percolation.Percolation`
+        :return: a tuple with the number of open and closed cells.
+        """
         p = Percolation(n, collection)
         while not p.percolates():
             x, y = random.randrange(n), random.randrange(n)
@@ -44,6 +59,13 @@ class PercolationStats:
         return open_cells, close_cells
 
     def do_experiment(self, n: int, series_count: int, collection=UFDSQuickUnion):
+        """
+        Runs Monte-Carlo experiment (single-thread mode)
+        :param n: size of matrix (n x n)
+        :param series_count: number of Monte-Carlo series
+        :param collection: UFDS, see `sks.percolatesanalyzer.percolation.Percolation`
+        :return: None
+        """
         if n <= 0 or series_count <= 0:
             raise ValueError
         self.series_open_cell = list()
@@ -52,6 +74,14 @@ class PercolationStats:
             self.series_open_cell.append(open_cells / (close_cells + open_cells))
 
     def _do_parallel_experiment(self, n, collection, pipe: connection.Connection, times):
+        """
+        Single thread logic of Monte-Carlo multi-thread experiment
+        :param n: size of matrix (n x n)
+        :param collection: UFDS, see `sks.percolatesanalyzer.percolation.Percolation`
+        :param pipe: connection between main runner and this thread
+        :param times: number of Monte-Carlo series (for this thread)
+        :return: None
+        """
         buffer = list()
         for _ in range(times):
             open_cells, close_cells = self._work(n, collection)
@@ -59,6 +89,14 @@ class PercolationStats:
         pipe.send(buffer)
 
     def do_parallel_experiment(self, n: int, series_count: int, threads=8, collection=UFDSQuickUnion):
+        """
+        Runs Monte-Carlo experiment (multi-thread mode)
+        :param n: size of matrix (n x n)
+        :param series_count: number of Monte-Carlo series
+        :param threads: number of processes, which will be created for experiments
+        :param collection: UFDS, see `sks.percolatesanalyzer.percolation.Percolation`
+        :return: None
+        """
         if n <= 0 or series_count <= 0 or threads <= 0:
             raise ValueError
         self.series_open_cell = list()

@@ -1,3 +1,6 @@
+"""
+This module provides statistical methods for the confidence interval, graphics builder.
+"""
 from itertools import product
 from typing import Mapping, Iterable, Tuple, NewType
 
@@ -6,10 +9,24 @@ import matplotlib.pyplot as plt
 from sks.percolatesanalyzer.main import PercolationStats
 from sks.percolatesanalyzer.percolation import UFDSQuickUnion
 
+__author__ = "6rayWa1cher"
+
 border_type = NewType("borders", Mapping[int, Iterable[Tuple[int, int, int]]])
 
 
 def start_process(n_arr, cycles_arr, vibration_factor=3, primary_key_cycles=False) -> border_type:
+    """
+    Runs various Monte-Carlo experiments and return its results in dict.
+    Vibration factor defines how many times each experiment configuration
+    will be run. Only the average result will be taken into account
+    (by the mean value of the interval).
+    :param n_arr: array of matrix sizes (n x n)
+    :param cycles_arr: array of cycles
+    :param vibration_factor: how many times each config will be run
+    :param primary_key_cycles: is cycle - primary key
+    :return: n -> set( (cycle, left, right) ) if not primary_key_cycles, else
+        cycle -> set( (n, left, right) )
+    """
     ps = PercolationStats()
     if primary_key_cycles:
         borders = {c: set() for c in cycles_arr}
@@ -19,7 +36,12 @@ def start_process(n_arr, cycles_arr, vibration_factor=3, primary_key_cycles=Fals
         print("Starting n:{0} cycles:{1} test...".format(n, cycles), end=' ')
         curr_borders = list()
         for _ in range(vibration_factor):
-            ps.do_parallel_experiment(n, cycles, threads=4, collection=UFDSQuickUnion)
+            # If the test in single-thread mode takes lower than one second on the test stand,
+            # it will better start single-thread mode. The formula is derived by testing.
+            if (10 ** -2) * ((n / 5) ** 2) * (cycles / 50) > 1.0:
+                ps.do_parallel_experiment(n, cycles, threads=8, collection=UFDSQuickUnion)
+            else:
+                ps.do_experiment(n, cycles, UFDSQuickUnion)
             l, r = ps.confidence()
             curr_borders.append(((l + r) / 2, l, r))
         center_index = len(curr_borders) // 2
@@ -34,6 +56,12 @@ def start_process(n_arr, cycles_arr, vibration_factor=3, primary_key_cycles=Fals
 
 
 def draw_graphics(borders: border_type, primary_key_cycles=False):
+    """
+    Draw graphics on display
+    :param borders: see start_process return
+    :param primary_key_cycles: is cycle - primary key
+    :return: None
+    """
     fig, axs = plt.subplots(nrows=len(borders.keys()), ncols=2)
     i = 0
     for primary, lr_set in borders.items():
