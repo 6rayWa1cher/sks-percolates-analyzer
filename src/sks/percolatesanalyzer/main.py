@@ -47,12 +47,12 @@ class PercolationStats:
         """
         p = Percolation(n, collection)
         while not p.percolates():
-            x, y = random.randrange(n), random.randrange(n)
-            p.open(x, y)
+            y, x = random.randrange(n), random.randrange(n)
+            p.open(y, x)
         open_cells, close_cells = 0, 0
-        for x in range(n):
-            for y in range(n):
-                if p.is_open(x, y):
+        for y in range(n):
+            for x in range(n):
+                if p.is_open(y, x):
                     open_cells += 1
                 else:
                     close_cells += 1
