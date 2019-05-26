@@ -65,6 +65,11 @@ class UFDSQuickUnion:
 
 class Percolation:
     def __init__(self, n, uf=UFDSQuickUnion):
+        """
+        Constructing n*n grid and UFDS with n^2+2 elements, where n^2 - elements of the grid and 2 extras to unite first and last line of the grid
+        :param n: size of grid
+        :param uf: type of Union-Find Data Structure passed as class
+        """
         self.n = n
         self.mass = [[0 for i in range(n)] for j in range(n)]
         self.field = uf(n ** 2 + 2)
@@ -73,6 +78,12 @@ class Percolation:
             self.field.union_set(n ** 2 + 1, n ** 2 - i)
 
     def getfindex(self, i, j):
+        """
+        Transforms pair of coordinates in index for UFDS
+        :param i: Oy-coordinate of element in grid
+        :param j: Ox-coordinate of element in grid
+        :return: index of element in UFDS
+        """
         return 1 + (i * self.n) + j
 
     def is_open(self, i, j):
@@ -81,6 +92,11 @@ class Percolation:
         return self.mass[i][j] == 1
 
     def open(self, i, j):
+        """
+        Opening element with (i, j) coordinates and connecting it to opened neighbours
+        :param i: Oy-coordinate of element in grid
+        :param j: Ox-coordinate of element in grid
+        """
         self.mass[i][j] = 1
         if self.is_open(i - 1, j):
             self.field.union_set(self.getfindex(i, j), self.getfindex(i - 1, j))
@@ -92,12 +108,26 @@ class Percolation:
             self.field.union_set(self.getfindex(i, j), self.getfindex(i, j + 1))
 
     def is_full(self, i, j):
+        """
+        Returning if element with (i, j) coordinates is connected to first line of grid
+        :param i: Oy-coordinate of element in grid
+        :param j: Ox-coordinate of element in grid
+        :return: true if connected else false
+        """
         return self.field.connected(0, self.getfindex(i, j))
 
     def percolates(self):
+        """
+        Returning if first and last line of gris are connected
+        :return: true if connected else false
+        """
         return self.field.connected(0, (self.n ** 2) + 1)
 
     def __str__(self):
+        """
+        Printing grid and UFDS
+        :return: str
+        """
         ret = ""
         ret += "Array:\n"
         for u in self.mass:
